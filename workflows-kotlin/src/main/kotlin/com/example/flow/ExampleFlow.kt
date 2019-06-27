@@ -26,6 +26,7 @@ import net.corda.core.utilities.ProgressTracker.Step
  * All methods called within the [FlowLogic] sub-class need to be annotated with the @Suspendable annotation.
  */
 object ExampleFlow {
+
     @InitiatingFlow
     @StartableByRPC
     class Initiator(val iouValue: Int,
@@ -56,7 +57,6 @@ object ExampleFlow {
         }
 
         override val progressTracker = tracker()
-
         /**
          * The flow logic is encapsulated within the call() method.
          */
@@ -86,14 +86,28 @@ object ExampleFlow {
 
             // Stage 4.
             progressTracker.currentStep = GATHERING_SIGS
+            logger.info("Check point 1")
             // Send the state to the counterparty, and receive it back with their signature.
             val otherPartySession = initiateFlow(otherParty)
-            val fullySignedTx = subFlow(CollectSignaturesFlow(partSignedTx, setOf(otherPartySession), GATHERING_SIGS.childProgressTracker()))
+            logger.info("Check point 2")
+//            val fullySignedTx =
+//            try{
+////                subFlow(CollectSignaturesFlow(partSignedTx, setOf(otherPartySession), GATHERING_SIGS.childProgressTracker()))
+//                subFlow(partSignedTx, GATHERING_SIGS.childProgressTracker())
+//            }catch(e: Exception) {
+//                logger.error("Exception happen:" + e.message)
+//                logger.error(e.toString())
+//                throw e
+//            }
+//	    			+ e.getMessage().substring(e.getMessage().indexOf(": ")+2, e.getMessage().length()));
 
+            logger.info("Check point 3")
             // Stage 5.
             progressTracker.currentStep = FINALISING_TRANSACTION
+            logger.info("Check point 4")
             // Notarise and record the transaction in both parties' vaults.
-            return subFlow(FinalityFlow(fullySignedTx, setOf(otherPartySession), FINALISING_TRANSACTION.childProgressTracker()))
+            //return subFlow(FinalityFlow(fullySignedTx, setOf(otherPartySession), FINALISING_TRANSACTION.childProgressTracker()))
+            return subFlow(FinalityFlow(partSignedTx, setOf(otherPartySession), FINALISING_TRANSACTION.childProgressTracker()))
         }
     }
 
@@ -109,7 +123,10 @@ object ExampleFlow {
                     "I won't accept IOUs with a value over 100." using (iou.value <= 100)
                 }
             }
+            logger.info("Check point 5")
             val txId = subFlow(signTransactionFlow).id
+
+            logger.info("Check point 6")
 
             return subFlow(ReceiveFinalityFlow(otherPartySession, expectedTxId = txId))
         }
