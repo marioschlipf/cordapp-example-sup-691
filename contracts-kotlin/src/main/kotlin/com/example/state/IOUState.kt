@@ -5,12 +5,17 @@ import com.example.schema.IOUSchemaV1
 import net.corda.core.contracts.BelongsToContract
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.LinearState
+import net.corda.core.contracts.SchedulableState
+import net.corda.core.contracts.ScheduledActivity
+import net.corda.core.contracts.StateRef
 import net.corda.core.contracts.UniqueIdentifier
+import net.corda.core.flows.FlowLogicRefFactory
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
+import java.time.Instant
 
 /**
  * The state object recording IOU agreements between two parties.
@@ -26,7 +31,15 @@ data class IOUState(val value: Int,
                     val lender: Party,
                     val borrower: Party,
                     override val linearId: UniqueIdentifier = UniqueIdentifier()):
-        LinearState, QueryableState {
+        LinearState, QueryableState, SchedulableState {
+    override fun nextScheduledActivity(
+        thisStateRef: StateRef,
+        flowLogicRefFactory: FlowLogicRefFactory
+    ): ScheduledActivity? {
+        val flowRef = flowLogicRefFactory.create("com.example.flow.SchedFlow")
+        return ScheduledActivity(flowRef, Instant.now())
+    }
+
     /** The public keys of the involved parties. */
     override val participants: List<AbstractParty> get() = listOf(lender, borrower)
 

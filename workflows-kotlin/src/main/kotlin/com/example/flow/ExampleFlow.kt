@@ -47,11 +47,11 @@ object ExampleFlow {
             }
 
             fun tracker() = ProgressTracker(
-                    GENERATING_TRANSACTION,
-                    VERIFYING_TRANSACTION,
-                    SIGNING_TRANSACTION,
-                    GATHERING_SIGS,
-                    FINALISING_TRANSACTION
+                GENERATING_TRANSACTION,
+                VERIFYING_TRANSACTION,
+                SIGNING_TRANSACTION,
+                GATHERING_SIGS,
+                FINALISING_TRANSACTION
             )
         }
 
@@ -71,8 +71,8 @@ object ExampleFlow {
             val iouState = IOUState(iouValue, serviceHub.myInfo.legalIdentities.first(), otherParty)
             val txCommand = Command(IOUContract.Commands.Create(), iouState.participants.map { it.owningKey })
             val txBuilder = TransactionBuilder(notary)
-                    .addOutputState(iouState, IOUContract.ID)
-                    .addCommand(txCommand)
+                .addOutputState(iouState, IOUContract.ID)
+                .addCommand(txCommand)
 
             // Stage 2.
             progressTracker.currentStep = VERIFYING_TRANSACTION
