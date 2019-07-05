@@ -117,10 +117,10 @@ object ExampleFlow {
         @Suspendable
         override fun call(): SignedTransaction {
             // Uncommenting this will make the receiving flow fail - the sender is not notified about this.
-//            return subFlow(ReceiveFinalityFlow(otherPartySession, expectedTxId = SecureHash.zeroHash))
+            return subFlow(ReceiveFinalityFlow(otherPartySession, expectedTxId = SecureHash.zeroHash))
 
-            
-            return subFlow(ReceiveFinalityFlow(otherPartySession))
+
+//            return subFlow(ReceiveFinalityFlow(otherPartySession))
         }
     }
 }

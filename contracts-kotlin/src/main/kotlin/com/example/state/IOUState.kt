@@ -31,15 +31,7 @@ data class IOUState(val value: Int,
                     val lender: Party,
                     val borrower: Party,
                     override val linearId: UniqueIdentifier = UniqueIdentifier()):
-        LinearState, QueryableState, SchedulableState {
-    override fun nextScheduledActivity(
-        thisStateRef: StateRef,
-        flowLogicRefFactory: FlowLogicRefFactory
-    ): ScheduledActivity? {
-        println("SAsked for nextScheduledActivity......")
-        val flowRef = flowLogicRefFactory.create("com.example.flow.SchedFlow")
-        return ScheduledActivity(flowRef, Instant.now())
-    }
+        LinearState, QueryableState {
 
     /** The public keys of the involved parties. */
     override val participants: List<AbstractParty> get() = listOf(lender, borrower)
